@@ -1,7 +1,7 @@
 const { Thought, User } = require("../models");
 
 module.exports = {
-  // Get all courses
+  // Get all thoughts
   async getThoughts(req, res) {
     try {
       const thoughts = await Thought.find();
@@ -10,7 +10,7 @@ module.exports = {
       res.status(500).json(err);
     }
   },
-  // Get a course
+  // Get a thought
   async getSingleThought(req, res) {
     try {
       const thought = await Thought.findOne({
@@ -33,10 +33,12 @@ module.exports = {
       const user = await User.findOneAndUpdate(
         { username: req.body.username },
         { $push: { thoughts: thought._id } },
-        { new: true },
+        { new: true }
       );
       if (!user) {
-        return res.status(404).json({ message: "Created thought, USER NOT FOUND" });
+        return res
+          .status(404)
+          .json({ message: "Created thought, USER NOT FOUND" });
       }
 
       res.json(thought);
@@ -45,7 +47,7 @@ module.exports = {
       return res.status(500).json(err);
     }
   },
-  // Delete a course
+  // Delete a thought
   async deleteThought(req, res) {
     try {
       const thought = await Thought.findOneAndDelete({
@@ -54,10 +56,12 @@ module.exports = {
       const user = await User.findOneAndUpdate(
         { username: req.body.username },
         { $pull: { thoughts: thought._id } },
-        { new: true },
+        { new: true }
       );
       if (!user) {
-        return res.status(404).json({ message: "Deleted thought, USER NOT FOUND" });
+        return res
+          .status(404)
+          .json({ message: "Deleted thought, USER NOT FOUND" });
       }
 
       res.json({ message: "Successfully deleted thought!" });
@@ -65,7 +69,7 @@ module.exports = {
       res.status(500).json(err);
     }
   },
-  // Update a course
+  // Update a thought
   async updateThought(req, res) {
     try {
       const thought = await Thought.findOneAndUpdate(
@@ -83,4 +87,47 @@ module.exports = {
       res.status(500).json(err);
     }
   },
+
+  
+  async addReaction(req, res) {
+    try {
+      const reaction = await Thought.create(req.body);
+      const user = await User.findOneAndUpdate(
+        { username: req.body.username },
+        { $push: { thoughts: req.body} },
+        { new: true }
+      );
+      if (!user) {
+        return res
+          .status(404)
+          .json({ message: "Created reaction, USER NOT FOUND" });
+      }
+
+      res.json(reaction);
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json(err);
+    }
+  },
+  async deleteReaction(req, res) {
+    try {
+      const deletedReaction = await Thought.findOneAndDelete({
+        _id: req.params.thoughtid,
+      });
+      const user = await User.findOneAndUpdate(
+        { username: req.body.username },
+        { $pull: { thoughts: thought._id } },
+        { new: true }
+      );
+      if (!user) {
+        return res
+          .status(404)
+          .json({ message: "Deleted thought, USER NOT FOUND" });
+      }
+
+      res.json({ message: "Successfully deleted thought!" });
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  }
 };

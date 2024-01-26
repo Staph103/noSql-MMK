@@ -2,62 +2,52 @@ const { Thought, User } = require("../models");
 
 module.exports = {
   // Get all courses
-  async getThoughts(req, res) {
+  async getUsers(req, res) {
     try {
-      const thoughts = await Thought.find();
-      res.json(thoughts);
+      const users = await User.find();
+      res.json(users);
     } catch (err) {
       res.status(500).json(err);
     }
   },
   // Get a course
-  async getSingleThought(req, res) {
+  async getSingleUser(req, res) {
     try {
-      const thought = await Thought.findOne({
-        _id: req.params.thoughtid,
+      const user = await User.findOne({
+        _id: req.params.userid,
       }).select("-__v");
 
-      if (!thought) {
-        return res.status(404).json({ message: "No thought with that ID" });
+      if (!user) {
+        return res.status(404).json({ message: "No user with that ID" });
       }
 
-      res.json(thought);
+      res.json(user);
     } catch (err) {
       res.status(500).json(err);
     }
   },
-  // Create a thought
-  async createThought(req, res) {
+  // Create a user
+  async createUser(req, res) {
     try {
-      const thought = await Thought.create(req.body);
-      const user = await User.findOneAndUpdate(
-        { username: req.body.username },
-        { $push: { thoughts: thought._id } },
-        { new: true },
-      );
+      const user = await User.create(req.body);
+  
       if (!user) {
-        return res.status(404).json({ message: "Created thought, USER NOT FOUND" });
+        return res.status(404).json({ message: "Could not create user" });
       }
-
-      res.json(thought);
+      res.json(user);
     } catch (err) {
       console.log(err);
       return res.status(500).json(err);
     }
   },
   // Delete a course
-  async deleteThought(req, res) {
+  async deleteUser(req, res) {
     try {
-      const thought = await Thought.findOneAndDelete({
-        _id: req.params.thoughtid,
+      const deletedUser = await User.findOneAndDelete({
+        _id: req.params.userid,
       });
-      const user = await User.findOneAndUpdate(
-        { username: req.body.username },
-        { $pull: { thoughts: thought._id } },
-        { new: true },
-      );
-      if (!user) {
-        return res.status(404).json({ message: "Deleted thought, USER NOT FOUND" });
+      if (!deletedUser) {
+        return res.status(404).json({ message: "Could not delete user" });
       }
 
       res.json({ message: "Successfully deleted thought!" });
