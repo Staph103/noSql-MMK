@@ -1,21 +1,25 @@
 const { Thought, User } = require("../models");
 
 module.exports = {
-  // Get all courses
+  // Get all users
   async getUsers(req, res) {
     try {
-      const users = await User.find();
+      const users = await User.find()
+      .populate("thoughts")
+      .populate("friends");
       res.json(users);
+      
     } catch (err) {
       res.status(500).json(err);
     }
   },
-  // Get a course
+  // Get a single user
   async getSingleUser(req, res) {
     try {
-      const user = await User.findOne({
-        _id: req.params.userid,
-      }).select("-__v");
+      const user = await User.findOne({ _id: req.params.userid })
+        .populate("thoughts")
+        .populate("friends")
+        .select("-__v");
 
       if (!user) {
         return res.status(404).json({ message: "No user with that ID" });
@@ -40,7 +44,9 @@ module.exports = {
       return res.status(500).json(err);
     }
   },
-  // Delete a course
+
+  
+  // Delete a user
   async deleteUser(req, res) {
     try {
       const deletedUser = await User.findOneAndDelete({
@@ -50,27 +56,41 @@ module.exports = {
         return res.status(404).json({ message: "Could not delete user" });
       }
 
-      res.json({ message: "Successfully deleted thought!" });
+      res.json({ message: "Successfully deleted user!" });
     } catch (err) {
       res.status(500).json(err);
     }
   },
-  // Update a course
-  async updateThought(req, res) {
+  // Update a user
+  async updateUser(req, res) {
     try {
-      const thought = await Thought.findOneAndUpdate(
-        { _id: req.params.thoughtid },
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: req.params.userid },
         { $set: req.body },
         { runValidators: true, new: true }
       );
 
-      if (!thought) {
-        return res.status(404).json({ message: "No thought with this id!" });
+      if (!updatedUser) {
+        return res.status(404).json({ message: "No user with this id!" });
       }
 
-      res.json(thought);
+      res.json(updatedUser);
     } catch (err) {
       res.status(500).json(err);
     }
   },
+  async addFriend(req, res) {
+    try {
+      const user = await User.findById(req.params.userid);
+      const friend = await User.findById(req.params.friendid);
+
+      if (!user || !friend) {
+        return res.status(404).json({ message: "User or friend not found" });
+      }
+    }catch(err){
+      
+    }
+    
+  }
 };
+
