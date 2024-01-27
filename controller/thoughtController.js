@@ -14,7 +14,7 @@ module.exports = {
   async getSingleThought(req, res) {
     try {
       const thought = await Thought.findOne({
-        _id: req.params.thoughtid,
+        _id: req.params.thoughtsId,
       }).select("-__v");
 
       if (!thought) {
@@ -51,10 +51,10 @@ module.exports = {
   async deleteThought(req, res) {
     try {
       const thought = await Thought.findOneAndDelete({
-        _id: req.params.thoughtid,
+        _id: req.params.thoughtsId,
       });
       const user = await User.findOneAndUpdate(
-        { username: req.body.username },
+        { username: thought.username },
         { $pull: { thoughts: thought._id } },
         { new: true }
       );
@@ -73,7 +73,7 @@ module.exports = {
   async updateThought(req, res) {
     try {
       const thought = await Thought.findOneAndUpdate(
-        { _id: req.params.thoughtid },
+        { _id: req.params.thoughtsId },
         { $set: req.body },
         { runValidators: true, new: true }
       );
@@ -91,16 +91,15 @@ module.exports = {
   
   async addReaction(req, res) {
     try {
-      const reaction = await Thought.create(req.body);
-      const user = await User.findOneAndUpdate(
-        { username: req.body.username },
-        { $push: { thoughts: req.body} },
+      const reaction = await Thought.findOneAndUpdate(
+        { _id: req.body.thoughtsId },
+        { $push: { reactions: req.body} },
         { new: true }
       );
-      if (!user) {
+      if (!reaction) {
         return res
           .status(404)
-          .json({ message: "Created reaction, USER NOT FOUND" });
+          .json({ message: "Thought not found" });
       }
 
       res.json(reaction);
@@ -111,21 +110,18 @@ module.exports = {
   },
   async deleteReaction(req, res) {
     try {
-      const deletedReaction = await Thought.findOneAndDelete({
-        _id: req.params.thoughtid,
-      });
-      const user = await User.findOneAndUpdate(
-        { username: req.body.username },
-        { $pull: { thoughts: thought._id } },
+      const reaction = await Thought.findOneAndUpdate(
+        { _id: req.body.thoughtsId },
+        { $pull: { reactions: {reactionId :req.params.reactionId} } },
         { new: true }
       );
-      if (!user) {
+      if (!reaction) {
         return res
           .status(404)
-          .json({ message: "Deleted thought, USER NOT FOUND" });
+          .json({ message: "thought not found " });
       }
 
-      res.json({ message: "Successfully deleted thought!" });
+      res.json({ message: "Successfully deleted reaction!" });
     } catch (err) {
       res.status(500).json(err);
     }

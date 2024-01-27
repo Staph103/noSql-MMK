@@ -14,17 +14,17 @@ router.route('/').get(getThoughts).post(createThought);
 
 // /api/courses/:courseId
 router
-  .route('/:thoughtid')
+  .route('/:thoughtsId')
   .get(getSingleThought)
   .put(updateThought)
   .delete(deleteThought);
 
 router
-.route("/:thoughtid/reactions")
+.route("/:thoughtsId/reactions")
 .post(addReaction)
 
 router
-.route("/:thoughtid/reactions/:reactionid")
+.route("/:thoughtsId/reactions/:reactionId")
 .delete(deleteReaction)
 
 
