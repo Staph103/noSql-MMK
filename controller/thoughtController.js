@@ -1,3 +1,4 @@
+//descontructing the Though and User models 
 const { Thought, User } = require("../models");
 
 module.exports = {
@@ -10,7 +11,7 @@ module.exports = {
       res.status(500).json(err);
     }
   },
-  // Get a thought
+  // Get a single thought 
   async getSingleThought(req, res) {
     try {
       const thought = await Thought.findOne({
@@ -26,7 +27,7 @@ module.exports = {
       res.status(500).json(err);
     }
   },
-  // Create a thought
+  // Creates a thought
   async createThought(req, res) {
     try {
       const thought = await Thought.create(req.body);
@@ -88,7 +89,7 @@ module.exports = {
     }
   },
 
-  
+  //Adding a new reaction to the thought by the thoughtId
   async addReaction(req, res) {
     try {
       const reaction = await Thought.findOneAndUpdate(
@@ -108,6 +109,7 @@ module.exports = {
       return res.status(500).json(err);
     }
   },
+  //Deleting a reaction that is associated with the thoughtId
   async deleteReaction(req, res) {
     try {
       const reaction = await Thought.findOneAndUpdate(
@@ -118,7 +120,7 @@ module.exports = {
       if (!reaction) {
         return res
           .status(404)
-          .json({ message: "thought not found " });
+          .json({ message: "Thought not found " });
       }
 
       res.json({ message: "Successfully deleted reaction!" });

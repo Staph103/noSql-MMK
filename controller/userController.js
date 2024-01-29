@@ -1,3 +1,4 @@
+//deconstructing the Thought and User models 
 const { Thought, User } = require("../models");
 
 module.exports = {
@@ -27,7 +28,7 @@ module.exports = {
       res.status(500).json(err.message);
     }
   },
-  // Create a user
+  // Create a single user
   async createUser(req, res) {
     try {
       const user = await User.create(req.body);
@@ -42,7 +43,7 @@ module.exports = {
     }
   },
 
-  // Delete a user
+  // Delete a user based on the userId entered
   async deleteUser(req, res) {
     try {
       const deletedUser = await User.findOneAndDelete({
@@ -75,6 +76,7 @@ module.exports = {
       res.status(500).json(err);
     }
   },
+  //adds a friend to a user based on friendId
   async addFriend(req, res) {
     try {
       const user = await User.findByIdAndUpdate(
@@ -91,6 +93,7 @@ module.exports = {
       res.status(500).json(err);
     }
   },
+  //Deletes a friend based on friendId
   async removeFriend(req, res) {
     try {
       const deletedUser = await User.findByIdAndUpdate(

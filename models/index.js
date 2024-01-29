@@ -1,3 +1,4 @@
+//
 const User = require("./users");
 const Thought = require("./thoughts");
 
